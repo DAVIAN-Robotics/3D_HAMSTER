@@ -1,0 +1,47 @@
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+*.egg
+.eggs/
+
+# Model checkpoints (large files)
+ckpt/
+*.safetensors
+*.bin
+*.pt
+
+# Environment
+.env
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Eval results
+eval_results/
+
+# OMC state
+.omc/
+
+# Gradio cache
+.gradio/
+
+# Stray duplicate leftover (real package is hamster3d/)
+/3d_hamster/
+
+# Working / golden artifacts
+golden/
+
+# Project-page media is committed so GitHub Pages serves the full page.
+# Re-include the .bin point-cloud frames that the global *.bin rule above ignores.
+!docs/static/**/*.bin
+

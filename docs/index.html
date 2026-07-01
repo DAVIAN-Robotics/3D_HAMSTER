@@ -1,0 +1,1470 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+    content="3D HAMSTER: Bridging Planning and Control in Hierarchical Vision Language Action Models through 3D Trajectory Guidance">
+  <meta name="keywords"
+    content="3D HAMSTER, VLA, Vision Language Action, Robot Manipulation, 3D Trajectory, Depth Encoder, Hierarchical">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>3D HAMSTER: Bridging Planning and Control through 3D Trajectory Guidance</title>
+
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="3D HAMSTER: Bridging Planning and Control through 3D Trajectory Guidance" />
+  <meta property="og:description"
+    content="A hierarchical VLA framework that closes the 2D-3D representational gap by having the planner directly output metrically grounded 3D trajectories for robust robot manipulation." />
+  <meta property="og:image" content="./static/images/og_teaser.jpg" />
+  <meta property="twitter:card" content="summary_large_image" />
+  <meta property="twitter:title" content="3D HAMSTER: Bridging Planning and Control through 3D Trajectory Guidance" />
+  <meta property="twitter:image" content="./static/images/og_teaser.jpg" />
+  <link rel="canonical" href="./index.html" />
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.4/css/bulma.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three":         "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ScholarlyArticle",
+    "headline": "3D HAMSTER: Bridging Planning and Control in Hierarchical Vision Language Action Models through 3D Trajectory Guidance",
+    "abstract": "A hierarchical VLA framework that closes the 2D-3D representational gap by augmenting a VLM with a depth encoder to directly predict metrically grounded 3D end-effector trajectories, which are executed by a point-cloud-based low-level policy.",
+    "author": [
+      { "@type": "Person", "name": "Dongyoon Hwang", "affiliation": "KAIST AI" },
+      { "@type": "Person", "name": "Byungkun Lee",  "affiliation": "KAIST AI" },
+      { "@type": "Person", "name": "Dongjin Kim",    "affiliation": "KAIST AI" },
+      { "@type": "Person", "name": "Hyojin Jang",    "affiliation": "KAIST AI" },
+      { "@type": "Person", "name": "Hoiyeong Jin",   "affiliation": "KAIST AI" },
+      { "@type": "Person", "name": "Jueun Mun",      "affiliation": "KAIST AI" },
+      { "@type": "Person", "name": "Minho Park",     "affiliation": "KAIST AI" },
+      { "@type": "Person", "name": "Hojoon Lee",     "affiliation": "Holiday Robotics" },
+      { "@type": "Person", "name": "Hyunseung Kim",  "affiliation": "KAIST AI, KRAFTON AI" },
+      { "@type": "Person", "name": "Jaegul Choo",    "affiliation": "KAIST AI" }
+    ],
+    "isPartOf": {
+      "@type": "PublicationEvent",
+      "name": "IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS) 2026"
+    }
+  }
+  </script>
+</head>
+
+<body>
+
+  <!-- ==================== HERO ==================== -->
+  <section class="hero">
+    <div class="hero-body">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered">
+          <div class="column has-text-centered">
+
+            <div class="venue-badge">
+              <span class="venue-dot"></span>
+              IROS 2026
+            </div>
+
+            <h1 class="title publication-title">
+              3D HAMSTER: Bridging Planning and Control in Hierarchical
+              Vision Language Action Models through 3D Trajectory Guidance
+            </h1>
+
+            <div class="is-size-5 publication-authors">
+              <span class="author-block">Dongyoon Hwang<sup>* 1</sup>,</span>
+              <span class="author-block">Byungkun Lee<sup>* 1</sup>,</span>
+              <span class="author-block">Dongjin Kim<sup>* 1</sup>,</span>
+              <span class="author-block">Hyojin Jang<sup>1</sup>,</span>
+              <span class="author-block">Hoiyeong Jin<sup>1</sup>,</span>
+              <span class="author-block">Jueun Mun<sup>2</sup>,</span>
+              <span class="author-block">Minho Park<sup>1</sup>,</span>
+              <span class="author-block">Hojoon Lee<sup>3</sup>,</span>
+              <span class="author-block">Hyunseung Kim<sup>1, 4</sup>,</span>
+              <span class="author-block">Jaegul Choo<sup>&dagger; 1</sup></span>
+            </div>
+
+            <div class="is-size-6 publication-authors" style="margin-top: 0.5rem;">
+              <span class="author-block" style="margin: 0 0.9rem;"><sup>1</sup>KAIST AI</span>
+              <span class="author-block" style="margin: 0 0.9rem;"><sup>2</sup>POSTECH</span>
+              <span class="author-block" style="margin: 0 0.9rem;"><sup>3</sup>Holiday Robotics</span>
+              <span class="author-block" style="margin: 0 0.9rem;"><sup>4</sup>KRAFTON AI</span>
+            </div>
+
+            <div class="is-size-7 publication-authors" style="margin-top: 0.3rem; opacity: 0.75;">
+              <span><sup>*</sup>Equal contribution</span>&nbsp;&nbsp;
+              <span><sup>&dagger;</sup>Corresponding author</span>
+            </div>
+
+            <div class="column has-text-centered">
+              <div class="publication-links">
+                <!-- Paper (PDF) -->
+                <span class="link-block">
+                  <a href="IROS_26_3D_HAMSTER.pdf"
+                     class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon"><i class="fas fa-file-pdf"></i></span>
+                    <span>Paper</span>
+                  </a>
+                </span>
+                <!-- arXiv -->
+                <span class="link-block">
+                  <a href="https://arxiv.org/abs/2606.31329"
+                     class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon"><i class="ai ai-arxiv"></i></span>
+                    <span>arXiv</span>
+                  </a>
+                </span>
+                <!-- Code -->
+                <span class="link-block">
+                  <a href="https://github.com/DAVIAN-Robotics/3D_HAMSTER"
+                     class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon"><i class="fab fa-github"></i></span>
+                    <span>Code</span>
+                  </a>
+                </span>
+                <!-- Hugging Face Model -->
+                <span class="link-block">
+                  <a href="https://huggingface.co/DAVIAN-Robotics/3D_HAMSTER"
+                     class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon">🤗</span>
+                    <span>Model</span>
+                  </a>
+                </span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== STICKY NAV ==================== -->
+  <nav class="page-nav" aria-label="Section navigation">
+    <div class="page-nav__inner">
+      <a href="#overview"     data-nav="overview">Overview</a>
+      <a href="#method"       data-nav="method">Method</a>
+      <a href="#trajectories" data-nav="trajectories">VLM Planner</a>
+      <a href="#qualitative"  data-nav="qualitative">Real Robot Results</a>
+      <a href="#hamster-vs"  data-nav="hamster-vs">2D vs. 3D</a>
+      <a href="#results"      data-nav="results">Quantitative Results</a>
+      <a href="#bibtex"       data-nav="bibtex">BibTeX</a>
+    </div>
+  </nav>
+
+  <!-- ==================== SUMMARY VIDEO (hidden) ====================
+  <section class="section reveal" id="summary">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column is-full-width">
+          <h2 class="ov-section-head">Summary Video</h2>
+          <figure class="content has-text-centered figure-block">
+            <video id="teaser-video" autoplay controls muted loop playsinline>
+              <source src="./static/videos/teaser.mp4" type="video/mp4">
+            </video>
+          </figure>
+        </div>
+      </div>
+    </div>
+  </section>
+  ==================== END SUMMARY VIDEO (hidden) ==================== -->
+
+  <!-- ==================== OVERVIEW (TL;DR + equation + pipeline) ==================== -->
+  <section class="section reveal" id="overview">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column is-full-width">
+
+          <h2 class="ov-section-head">Overview</h2>
+
+          <div class="content" style="margin: 0 auto 1.6rem; max-width: 780px;">
+            <div class="tldr-box">
+              <strong>TL;DR:</strong> <strong>3D HAMSTER</strong> predicts metrically grounded 3D end-effector
+              trajectories from a depth-augmented VLM and executes them through a pointcloud-based low-level
+              policy, enabling robust manipulation across diverse real-world scenes, instructions, and visual
+              conditions.
+            </div>
+          </div>
+
+          <!-- Overview equation (row 1: cards + operators) + pipeline visuals (row 2) -->
+          <div class="overview-eq" aria-label="Method overview">
+            <div class="overview-eq__panel oe-c1">
+              <div class="overview-eq__icon"><i class="fas fa-cube"></i></div>
+              <div class="overview-eq__title">Depth-Aware VLM Planner</div>
+              <div class="overview-eq__desc">Predicts metric 3D end-effector trajectories from RGB-D input.</div>
+            </div>
+            <div class="overview-eq__op oe-op1" aria-hidden="true">+</div>
+            <div class="overview-eq__panel oe-c2">
+              <div class="overview-eq__icon"><i class="fas fa-diagram-project"></i></div>
+              <div class="overview-eq__title">Point-Cloud Policy</div>
+              <div class="overview-eq__desc">Executes the predicted 3D trajectory on the observed point cloud.</div>
+            </div>
+            <div class="overview-eq__op oe-op2" aria-hidden="true">=</div>
+            <div class="overview-eq__panel overview-eq__panel--result oe-c3">
+              <div class="overview-eq__icon"><i class="fas fa-bullseye"></i></div>
+              <div class="overview-eq__title">Robust Manipulation</div>
+              <div class="overview-eq__desc">Generalizes across language, spatial, and visual distribution shifts.</div>
+            </div>
+
+            <!-- row 2: pipeline visuals (panel3 = panel1 trajectory + panel2 execution) -->
+            <div class="overview-eq__viz oe-v1">
+              <video class="oe-clip" autoplay muted loop playsinline>
+                <source src="./static/overview/panel1_planner.mp4" type="video/mp4">
+              </video>
+              <div class="oe-cap">Predicts a metric 3D trajectory</div>
+            </div>
+            <div class="overview-eq__viz oe-v2">
+              <video class="oe-clip" autoplay muted loop playsinline>
+                <source src="./static/overview/panel2_policy.mp4" type="video/mp4">
+              </video>
+              <div class="oe-cap">Rolls out on the observed point cloud</div>
+            </div>
+            <div class="overview-eq__viz oe-v3">
+              <video class="oe-clip" autoplay muted loop playsinline>
+                <source src="./static/overview/panel3_diverse.mp4" type="video/mp4">
+              </video>
+              <div class="oe-cap">Robust across diverse tasks &amp; conditions</div>
+            </div>
+          </div>
+          <p class="overview-eq__tagline">Planning in metric 3D &mdash; not in pixels &mdash; keeps execution geometrically grounded.</p>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== METHOD ==================== -->
+  <section class="section reveal" id="method" data-section-num="01">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column is-full-width">
+          <div class="section-label">Approach</div>
+          <h2 class="title is-4 section-title" data-section-num="01">Method</h2>
+          <div class="content has-text-justified" style="margin-top: 1.2rem;">
+            <p>
+              Hierarchical Vision-Language-Action (VLA) models split manipulation into a high-level planner and a
+              low-level policy. Today's strongest low-level policies operate on 3D point clouds, yet existing
+              planners predict only 2D pixel trajectories &mdash; forcing each waypoint to inherit the depth of
+              whatever surface lies beneath it.
+            </p>
+            <p>
+              <strong>3D HAMSTER</strong> removes that mismatch. We build:
+            </p>
+            <ol class="method-build-list">
+              <li>
+                <strong>A depth-aware VLM planner</strong> &mdash; augmented with a geometry encoder and a
+                dense depth-reconstruction objective &mdash; that predicts metric 3D end-effector trajectories.
+                Visualized in <a href="#trajectories">&sect;02</a>.
+              </li>
+              <li>
+                <strong>A 3D-trajectory-conditioned point-cloud policy</strong> (rectified-flow, 3DFA) trained to
+                roll out the planner's predictions on real hardware.
+                Real-world rollouts in <a href="#qualitative">&sect;03</a>.
+              </li>
+            </ol>
+          </div>
+
+          <figure class="content has-text-centered figure-block">
+            <img class="method-figure" src="./static/images/method_figure.png"
+              alt="Architecture diagram of 3D HAMSTER showing the depth-augmented VLM planner producing 3D waypoints that are unprojected and fused into the point cloud consumed by the low-level policy.">
+          </figure>
+
+          <!-- Key Contributions -->
+          <div class="contributions-box" aria-label="Key contributions">
+            <div class="contributions-title">Key Contributions</div>
+            <ol class="contributions-list">
+              <li>
+                <strong>3D-native hierarchical VLA.</strong>
+                The VLM planner outputs metric 3D end-effector trajectories that feed directly into a point-cloud
+                low-level policy &mdash; no 2D-to-3D translation in between.
+              </li>
+              <li>
+                <strong>Recipe for metric-3D VLM prediction.</strong>
+                A depth encoder, a depth-reconstruction objective, and a curated data mixture turn Qwen3-VL into a
+                planner whose (u,&thinsp;v,&thinsp;d) waypoints unproject to consistent world coordinates.
+              </li>
+              <li>
+                <strong>Geometry-grounded generalization.</strong>
+                Planning in metric 3D &mdash; instead of pixel paths whose depth must be inferred at execution
+                &mdash; yields manipulation that holds across novel scenes, instructions, and lighting.
+              </li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 3D TRAJECTORY VISUALIZATION (merged) ==================== -->
+  <section class="section reveal" id="trajectories" data-section-num="02">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column is-full-width">
+          <div class="section-label">Trajectory Prediction</div>
+          <h2 class="title is-4 section-title" data-section-num="02">Depth-Aware VLM Planner</h2>
+          <div class="content has-text-justified" style="margin-top: 1.2rem;">
+            <p>
+              Our depth-aware VLM predicts <strong>metric 3D end-effector trajectories directly</strong> &mdash;
+              every waypoint a real point in the scene, not a pixel whose depth must be inferred at execution.
+              The two views below let you scrutinize that geometry yourself: paired renders that lock the same
+              trajectory to two camera angles, and free-orbit point clouds you can explore from any viewpoint.
+              Across <strong>DroidSpatial-Bench</strong> and our <strong>real-world</strong> benchmark, our
+              planner stays tight on ground truth where strong general-purpose VLMs &mdash; RoboBrain 2.5 and
+              Gemini 3.0 Pro &mdash; visibly drift in depth.
+            </p>
+          </div>
+
+          <!-- How the planner works: RGB-D + prompt -> VLM -> 3D trajectory -->
+          <h3 class="title is-5" style="margin-top: 1.4rem;">From RGB-D + Instruction to a 3D Trajectory</h3>
+          <div class="content has-text-justified" style="margin-top: 0.4rem;">
+            <p>
+              The planner takes a single <strong>RGB-D</strong> observation and a
+              <strong>language instruction</strong>, and directly outputs a
+              <strong>metric 3D end-effector trajectory</strong> &mdash; a real path in the scene.
+              Rotating it makes clear the prediction lives in 3D, not on the image plane.
+            </p>
+          </div>
+          <figure class="vlm-flow" aria-label="Planner input to output flow">
+            <div class="vlm-flow__inputs">
+              <figure class="vlm-flow__in">
+                <img src="./static/overview/input_rgb.png" alt="RGB input"><figcaption>RGB</figcaption>
+              </figure>
+              <figure class="vlm-flow__in">
+                <img src="./static/overview/input_depth.png" alt="Depth input"><figcaption>Depth</figcaption>
+              </figure>
+              <div class="vlm-flow__prompt">
+                <span class="vlm-flow__chip">Prompt</span>&ldquo;pick up the blue car and put it in the pink bowl&rdquo;
+              </div>
+            </div>
+            <div class="vlm-flow__arrow" aria-hidden="true"><i class="fas fa-arrow-right"></i></div>
+            <div class="vlm-flow__model">
+              <i class="fas fa-cube"></i>
+              <span>3D HAMSTER<br>VLM</span>
+            </div>
+            <div class="vlm-flow__arrow" aria-hidden="true"><i class="fas fa-arrow-right"></i></div>
+            <div class="vlm-flow__out">
+              <video autoplay muted loop playsinline>
+                <source src="./static/overview/panel1_planner.mp4" type="video/mp4">
+              </video>
+              <figcaption>Metric 3D trajectory</figcaption>
+            </div>
+          </figure>
+
+          <div class="content has-text-justified" style="margin-top: 0.9rem;">
+            <p>
+              <strong>How it is trained.</strong>
+              We build on <strong>Qwen3-VL-8B</strong> and add a dedicated <strong>depth encoder</strong> plus a dense
+              <strong>depth-reconstruction loss</strong> that keeps the model's internal geometry metrically faithful.
+              Training runs in two stages &mdash; Stage&nbsp;1 aligns the depth features with the VLM space (encoders
+              frozen), Stage&nbsp;2 fine-tunes for trajectory prediction with LoRA. The planner learns from a mixture of
+              <strong>3D-capability data</strong> (RGB-D trajectories and spatial reasoning) and
+              <strong>2D preservation data</strong> (RGB-only pointing, detection, and VQA) that keeps its general
+              vision-language ability intact.
+            </p>
+          </div>
+
+          <figure class="figure-block">
+            <div class="table-caption">
+              <strong>Training data composition.</strong> Eight sources across two categories &mdash; 3D-capability
+              (RGB-D) for metric trajectory prediction, and preservation (RGB) to retain general ability.
+            </div>
+            <div class="table-wrapper">
+              <table class="results-table">
+                <thead>
+                  <tr><th>Source</th><th>Env.</th><th>Modality</th><th>Tasks</th><th>Size</th></tr>
+                </thead>
+                <tbody>
+                  <tr class="section-header"><td colspan="5">3D Capability Data</td></tr>
+                  <tr><td>RLBench</td><td>Sim</td><td>RGB-D</td><td>2D / 3D / 2D&rarr;3D</td><td>606K</td></tr>
+                  <tr><td>DROID</td><td>Real</td><td>RGB-D</td><td>2D / 3D / 2D&rarr;3D</td><td>123K</td></tr>
+                  <tr><td>InternData-M1</td><td>Sim</td><td>RGB-D</td><td>2D / 3D / 2D&rarr;3D</td><td>1.5M</td></tr>
+                  <tr><td>RefSpatial</td><td>Mix</td><td>RGB-D</td><td>Spatial QA / Vacant loc.</td><td>2.2M</td></tr>
+                  <tr class="section-header"><td colspan="5">Preservation Data</td></tr>
+                  <tr><td>RoboPoint</td><td>Sim</td><td>RGB</td><td>2D pointing</td><td>666K</td></tr>
+                  <tr><td>PixMo</td><td>Real</td><td>RGB</td><td>2D pointing</td><td>171K</td></tr>
+                  <tr><td>LVIS</td><td>Real</td><td>RGB</td><td>2D bbox det.</td><td>138K</td></tr>
+                  <tr><td>Honey-1M</td><td>Web</td><td>RGB</td><td>General VQA</td><td>749K</td></tr>
+                </tbody>
+                <tfoot>
+                  <tr><td colspan="4">Total</td><td>&asymp;&nbsp;6.15M</td></tr>
+                </tfoot>
+              </table>
+            </div>
+          </figure>
+
+          <figure class="figure-block">
+            <div class="table-caption">
+              <strong>Representative samples.</strong> One real training example per source, with its ground-truth
+              label (trajectory, points, or box) overlaid.
+            </div>
+            <div class="ex-grid">
+            <figure class="ex-card">
+              <div class="ex-card__media"><img src="./static/images/train_samples/rlbench.jpg" alt="RLBench sample with a 3D trajectory overlay."></div>
+              <figcaption class="ex-card__body">
+                <div class="ex-card__head"><span class="ex-card__name">RLBench</span><span class="train-badge train-badge--rgbd">RGB-D</span></div>
+                <p class="ex-card__instr">&ldquo;Put the ring on the red peg&rdquo;</p>
+              </figcaption>
+            </figure>
+            <figure class="ex-card">
+              <div class="ex-card__media"><img src="./static/images/train_samples/droid.jpg" alt="DROID sample with a 3D trajectory overlay."></div>
+              <figcaption class="ex-card__body">
+                <div class="ex-card__head"><span class="ex-card__name">DROID</span><span class="train-badge train-badge--rgbd">RGB-D</span></div>
+                <p class="ex-card__instr">&ldquo;Take the marker out of the cup&rdquo;</p>
+              </figcaption>
+            </figure>
+            <figure class="ex-card">
+              <div class="ex-card__media"><img src="./static/images/train_samples/internmanip.jpg" alt="InternData-M1 sample with a 3D trajectory overlay."></div>
+              <figcaption class="ex-card__body">
+                <div class="ex-card__head"><span class="ex-card__name">InternData-M1</span><span class="train-badge train-badge--rgbd">RGB-D</span></div>
+                <p class="ex-card__instr">&ldquo;Set the lantern on the vintage monitor&rdquo;</p>
+              </figcaption>
+            </figure>
+            <figure class="ex-card">
+              <div class="ex-card__media"><img src="./static/images/train_samples/refspatial.jpg" alt="RefSpatial spatial-reasoning sample."></div>
+              <figcaption class="ex-card__body">
+                <div class="ex-card__head"><span class="ex-card__name">RefSpatial</span><span class="train-badge train-badge--rgbd">RGB-D</span></div>
+                <p class="ex-card__instr">&ldquo;Which point is farther back, 1 or 2?&rdquo;</p>
+              </figcaption>
+            </figure>
+            <figure class="ex-card">
+              <div class="ex-card__media"><img src="./static/images/train_samples/robopoint.jpg" alt="RoboPoint sample with affordance points."></div>
+              <figcaption class="ex-card__body">
+                <div class="ex-card__head"><span class="ex-card__name">RoboPoint</span><span class="train-badge train-badge--rgb">RGB</span></div>
+                <p class="ex-card__instr">&ldquo;Spot the item left of the red box&rdquo;</p>
+              </figcaption>
+            </figure>
+            <figure class="ex-card">
+              <div class="ex-card__media"><img src="./static/images/train_samples/pixmo.jpg" alt="PixMo pointing sample."></div>
+              <figcaption class="ex-card__body">
+                <div class="ex-card__head"><span class="ex-card__name">PixMo</span><span class="train-badge train-badge--rgb">RGB</span></div>
+                <p class="ex-card__instr">&ldquo;Where can I find the cups?&rdquo;</p>
+              </figcaption>
+            </figure>
+            <figure class="ex-card">
+              <div class="ex-card__media"><img src="./static/images/train_samples/lvis.jpg" alt="LVIS detection sample with a bounding box."></div>
+              <figcaption class="ex-card__body">
+                <div class="ex-card__head"><span class="ex-card__name">LVIS</span><span class="train-badge train-badge--rgb">RGB</span></div>
+                <p class="ex-card__instr">&ldquo;Locate the kid in this image&rdquo;</p>
+              </figcaption>
+            </figure>
+            <figure class="ex-card">
+              <div class="ex-card__media"><img src="./static/images/train_samples/honey.jpg" alt="Honey-1M general VQA sample."></div>
+              <figcaption class="ex-card__body">
+                <div class="ex-card__head"><span class="ex-card__name">Honey-1M</span><span class="train-badge train-badge--rgb">RGB</span></div>
+                <p class="ex-card__instr">&ldquo;Tell me about this steam locomotive&rdquo;</p>
+              </figcaption>
+            </figure>
+            </div>
+          </figure>
+
+          <!-- Subsection A: Side-by-side renders across scenes -->
+          <h3 class="title is-5" style="margin-top: 1.6rem;">Side-by-Side Renders</h3>
+          <div class="content has-text-justified" style="margin-top: 0.4rem;">
+            <p>
+              Three real-world tasks, three different scenes &mdash; each rendered with the ground-truth
+              trajectory and the predictions from our VLM, RoboBrain 2.5, and Gemini 3.0 Pro overlaid on the
+              same point cloud. <strong>Our planner threads the correct 3D path in every scene</strong>, while
+              the baselines drift in depth or miss the target surface.
+            </p>
+          </div>
+
+          <!-- Shared legend (color key for both subsections) -->
+          <div class="legend-block" aria-label="Trajectory color legend">
+            <img src="./static/images/3d_trajectory_legend.png"
+                 alt="Legend: ground-truth trajectory, 3D HAMSTER (ours), and baseline predictions.">
+          </div>
+
+          <figure class="content figure-block" data-sxs-zoom>
+            <div class="trajectory-row">
+              <div class="trajectory-cell">
+                <video autoplay muted loop playsinline class="result-video">
+                  <source src="./static/videos/3d_trajectory_1.mp4" type="video/mp4">
+                </video>
+                <div class="trajectory-prompt">Pick up the blue car and place it in the basket</div>
+              </div>
+              <div class="trajectory-cell">
+                <video autoplay muted loop playsinline class="result-video">
+                  <source src="./static/videos/3d_trajectory_2.mp4" type="video/mp4">
+                </video>
+                <div class="trajectory-prompt">Pick up the lying book and insert it into the gap between the other books</div>
+              </div>
+              <div class="trajectory-cell">
+                <video autoplay muted loop playsinline class="result-video">
+                  <source src="./static/videos/3d_trajectory_3.mp4" type="video/mp4">
+                </video>
+                <div class="trajectory-prompt">Pick up the banana and place it on the white mat</div>
+              </div>
+            </div>
+          </figure>
+
+          <div class="content has-text-justified" style="margin-top: 1.1rem;">
+            <p>
+              The same comparison on <strong>DroidSpatial-Bench</strong> &mdash; three benchmark scenes where
+              our planner threads the gripper onto the correct target surface, while RoboBrain 2.5 and
+              Gemini 3.0 Pro drift in depth.
+            </p>
+          </div>
+          <figure class="content figure-block" data-sxs-zoom>
+            <div class="trajectory-row">
+              <div class="trajectory-cell">
+                <video autoplay muted loop playsinline class="result-video">
+                  <source src="./static/videos/droid_sxs_1.mp4" type="video/mp4">
+                </video>
+                <div class="trajectory-prompt">Put the white plate in the white dish tub in the sink</div>
+              </div>
+              <div class="trajectory-cell">
+                <video autoplay muted loop playsinline class="result-video">
+                  <source src="./static/videos/droid_sxs_2.mp4" type="video/mp4">
+                </video>
+                <div class="trajectory-prompt">Pick the green lid from the table and place it on the small bottle</div>
+              </div>
+              <div class="trajectory-cell">
+                <video autoplay muted loop playsinline class="result-video">
+                  <source src="./static/videos/droid_sxs_3.mp4" type="video/mp4">
+                </video>
+                <div class="trajectory-prompt">Put the wooden spoon in the open drawer</div>
+              </div>
+            </div>
+          </figure>
+
+          <!-- Subsection B: Interactive viewers -->
+          <h3 class="title is-5" style="margin-top: 2.4rem;">Explore Interactively</h3>
+          <div class="content has-text-justified" style="margin-top: 0.4rem;">
+            <p>
+              Don&rsquo;t take our word for it &mdash; orbit freely and check the geometry from any angle.
+              Each viewer shows our <strong>3D HAMSTER</strong> prediction (a red&rarr;blue gradient trajectory) on the scene point cloud.
+              From every viewpoint, our trajectory stays glued to the correct object surface.
+            </p>
+            <p style="margin-top: 0.6rem; font-size: 0.92rem; color: var(--ink-mid);">
+              <strong>Drag to orbit, scroll to zoom, right-click to pan.</strong>
+              Use <kbd>&larr;</kbd> / <kbd>&rarr;</kbd> (or the buttons) to cycle scenes within a carousel.
+            </p>
+          </div>
+
+          <div class="pcd-carousel-row">
+
+            <!-- DroidSpatial-Bench carousel -->
+            <div class="pcd-carousel" tabindex="0"
+                 role="region" aria-roledescription="carousel"
+                 aria-label="DroidSpatial-Bench scene carousel">
+              <div class="pcd-carousel__head">
+                <span class="pcd-carousel__group">DroidSpatial-Bench</span>
+                <span class="pcd-carousel__counter">
+                  <span data-counter-current>1</span> / <span data-counter-total>15</span>
+                </span>
+              </div>
+              <div class="pcd-host is-tall" data-viewer></div>
+              <div class="pcd-carousel__nav">
+                <button class="pcd-carousel__btn" data-prev type="button" aria-label="Previous scene">
+                  <i class="fas fa-chevron-left"></i>
+                </button>
+                <div class="pcd-carousel__cap" data-cap aria-live="polite">Put the white plate in the white dish tub in the sink</div>
+                <button class="pcd-carousel__btn" data-next type="button" aria-label="Next scene">
+                  <i class="fas fa-chevron-right"></i>
+                </button>
+              </div>
+              <div class="pcd-carousel__dots" data-dots role="tablist" aria-label="DroidSpatial-Bench scenes"></div>
+              <div class="pcd-carousel__hint">
+                <i class="fas fa-keyboard"></i> Click to focus, then use <kbd>&larr;</kbd> <kbd>&rarr;</kbd>
+              </div>
+              <script type="application/json" data-slides>
+              [
+                {"ply":"./static/qualitative_results%202/droid_bench_results/107_aug_1/comparison_3d.ply","dataset":"droid","caption":"Put the white plate in the white dish tub in the sink"},
+                {"ply":"./static/qualitative_results%202/droid_bench_results/116/comparison_3d.ply","dataset":"droid","caption":"Pick the green lid from the table and place it on the small bottle"},
+                {"ply":"./static/qualitative_results%202/droid_bench_results/67/comparison_3d.ply","dataset":"droid","caption":"Put the wooden spoon in the open drawer"},
+                {"ply":"./static/qualitative_results%202/droid_bench_results/1_aug_1/comparison_3d.ply","dataset":"droid","caption":"Pick up the green cloth and place it on the wooden box"},
+                {"ply":"./static/qualitative_results%202/droid_bench_results/124/comparison_3d.ply","dataset":"droid","caption":"Place the red bowl on the plate"},
+                {"ply":"./static/qualitative_results%202/droid_bench_results/53/comparison_3d.ply","dataset":"droid","caption":"Move the lid from the black pot to the blue pan"},
+                {"ply":"./static/qualitative_results%202/droid_bench_results/81_aug_1/comparison_3d.ply","dataset":"droid","caption":"Pick the red marker and put it on the white plate"},
+                {"ply":"./static/qualitative_results%202/droid_bench_results/104/comparison_3d.ply","dataset":"droid","caption":"Stack the right cups in the left cups"},
+                {"ply":"./static/qualitative_results%202/droid_bench_results/96/comparison_3d.ply","dataset":"droid","caption":"Pick the purple ball and put it in the bowl"},
+                {"ply":"./static/qualitative_results%202/droid_bench_results/102/comparison_3d.ply","dataset":"droid","caption":"Put the peach shirt in the white basket"},
+                {"ply":"./static/qualitative_results%202/droid_bench_results/36/comparison_3d.ply","dataset":"droid","caption":"Pick up the pair of scissors from the table and put it in the bowl."},
+                {"ply":"./static/qualitative_results%202/droid_bench_results/79/comparison_3d.ply","dataset":"droid","caption":"Hang the masking tape on the wooden stand"},
+                {"ply":"./static/qualitative_results%202/droid_bench_results/3_aug_1/comparison_3d.ply","dataset":"droid","caption":"Put the egg in the red bowl"},
+                {"ply":"./static/qualitative_results%202/droid_bench_results/125_aug_1/comparison_3d.ply","dataset":"droid","caption":"Put the red can inside the upper cabinet"},
+                {"ply":"./static/qualitative_results%202/droid_bench_results/7_aug_1/comparison_3d.ply","dataset":"droid","caption":"Pick up the pen and place it in the white cup"}
+              ]
+              </script>
+            </div>
+
+            <!-- Real-World carousel -->
+            <div class="pcd-carousel" tabindex="0"
+                 role="region" aria-roledescription="carousel"
+                 aria-label="Real-World scene carousel">
+              <div class="pcd-carousel__head">
+                <span class="pcd-carousel__group">Real-World</span>
+                <span class="pcd-carousel__counter">
+                  <span data-counter-current>1</span> / <span data-counter-total>5</span>
+                </span>
+              </div>
+              <div class="pcd-host is-tall" data-viewer></div>
+              <div class="pcd-carousel__nav">
+                <button class="pcd-carousel__btn" data-prev type="button" aria-label="Previous scene">
+                  <i class="fas fa-chevron-left"></i>
+                </button>
+                <div class="pcd-carousel__cap" data-cap aria-live="polite">Select the creature that nests on ice and move it to the top drawer</div>
+                <button class="pcd-carousel__btn" data-next type="button" aria-label="Next scene">
+                  <i class="fas fa-chevron-right"></i>
+                </button>
+              </div>
+              <div class="pcd-carousel__dots" data-dots role="tablist" aria-label="Real-World scenes"></div>
+              <div class="pcd-carousel__hint">
+                <i class="fas fa-keyboard"></i> Click to focus, then use <kbd>&larr;</kbd> <kbd>&rarr;</kbd>
+              </div>
+              <script type="application/json" data-slides>
+              [
+                {"ply":"./static/qualitative_results%202/realworld_results/abstract_language/Select_the_creature_that_nests_on_ice_and_move_it_to_the_top_drawer/comparison_3d.ply","dataset":"real_world","caption":"Select the creature that nests on ice and move it to the top drawer"},
+                {"ply":"./static/qualitative_results%202/realworld_results/abstract_language/What_fruit_is_used_to_make_wine_Place_it_in_the_white_bowl./comparison_3d.ply","dataset":"real_world","caption":"What fruit is used to make wine? Place it in the white bowl."},
+                {"ply":"./static/qualitative_results%202/realworld_results/cluttered_environments/Pick_up_the_blue_car_and_place_it_in_the_blue_basket/comparison_3d.ply","dataset":"real_world","caption":"Pick up the blue car and place it in the blue basket (cluttered)"},
+                {"ply":"./static/qualitative_results%202/realworld_results/cluttered_environments/Pick_up_the_lying_book_and_insert_it_into_the_gap_between_the_other_books/comparison_3d.ply","dataset":"real_world","caption":"Pick up the lying book and insert it into the gap between the other books"},
+                {"ply":"./static/qualitative_results%202/realworld_results/varied_lighting/Pick_up_the_banana_and_place_it_on_the_white_mat/comparison_3d.ply","dataset":"real_world","caption":"Pick up the banana and place it on the white mat","pov":[0.259,-1.157,-0.184],"up":[0,0,1]}
+              ]
+              </script>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== QUALITATIVE RESULTS (MERGED) ==================== -->
+  <section class="section reveal" id="qualitative" data-section-num="03">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column is-full-width">
+          <div class="section-label">Robot Rollouts &middot; Real-World</div>
+          <h2 class="title is-4 section-title" data-section-num="03">Real Robot Results</h2>
+
+          <h3 class="title is-5 rr-subhead" style="margin-top: 1.4rem;">
+            <span class="rr-subhead__chip rr-subhead__chip--ours">Ours</span>3D HAMSTER &mdash; Every Task &amp; Condition
+          </h3>
+          <div class="content has-text-justified" style="margin-top: 0.5rem;">
+            <p>
+              We roll out <strong>3D HAMSTER</strong> on a real Franka Panda across three task families and
+              the five condition shifts from our quantitative protocol (<a href="#results">&sect;05</a>):
+              <strong>In-distribution</strong>, <strong>Language</strong>, <strong>Spatial</strong>,
+              <strong>Visual</strong>, and <strong>Multiple</strong>. Pick a task to scan all five conditions
+              at a glance, then select one to inspect its rollout next to the predicted 3D trajectory in an
+              interactive point cloud.
+            </p>
+          </div>
+
+          <div class="rr-gallery" data-rr-gallery>
+            <div class="rr-tabs" role="tablist" aria-label="Task family">
+              <button class="rr-tab is-active" type="button" role="tab" data-fam="pnp">Pick-and-Place</button>
+              <button class="rr-tab" type="button" role="tab" data-fam="pouring">Pouring</button>
+              <button class="rr-tab" type="button" role="tab" data-fam="button">Button Pressing</button>
+            </div>
+
+            <div class="rr-conditions" data-rr-conditions aria-label="Condition shifts"></div>
+
+            <!-- Full-width prompt bar directly under the condition tiles -->
+            <div class="rr-prompt-bar" data-rr-prompt></div>
+
+            <div class="rr-focus" data-rr-focus>
+              <div class="rr-focus__col">
+                <div class="rr-focus__label">
+                  <i class="fas fa-film"></i> Real-Robot Rollout
+                  <span class="rr-focus__tag">video</span>
+                </div>
+                <div class="rr-focus__media">
+                  <video class="rr-focus__video" data-rr-video autoplay muted loop playsinline></video>
+                  <span class="rr-focus__badge" data-rr-badge hidden>Representative example</span>
+                </div>
+              </div>
+              <div class="rr-focus__col">
+                <div class="rr-focus__label">
+                  <i class="fas fa-cube"></i> Interactive 3D
+                  <span class="rr-focus__tag rr-focus__tag--live">interactive</span>
+                </div>
+                <div class="rr-focus__viewer">
+                  <div class="rr-focus__host" data-rr-host></div>
+                  <div class="rr-focus__hint" data-rr-hint>
+                    <i class="fas fa-arrows-rotate"></i> drag to rotate
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <script type="application/json" data-rr-json>
+          {"conditions":["In-distribution","Language","Spatial","Visual","Multiple"],"families":[{"key":"pnp","label":"Pick-and-Place","episodes":[{"condition":"In-distribution","instruction":"pick up the blue car and put it in the pink bowl","placeholder":false,"rollout":"./static/realrobot/pnp/In-distribution/rollout.mp4","frames":"./static/realrobot/pnp/In-distribution/frames.json","poster":"./static/realrobot/pnp/In-distribution/poster.png"},{"condition":"Language","instruction":"pick up the office gadget that clamps documents and put it in the yellow bowl","placeholder":false,"rollout":"./static/realrobot/pnp/Language/rollout.mp4","frames":"./static/realrobot/pnp/Language/frames.json","poster":"./static/realrobot/pnp/Language/poster.png"},{"condition":"Spatial","instruction":"pick up the peanut and place it in the left bowl","placeholder":false,"rollout":"./static/realrobot/pnp/Spatial/rollout.mp4","frames":"./static/realrobot/pnp/Spatial/frames.json","poster":"./static/realrobot/pnp/Spatial/poster.png"},{"condition":"Visual","instruction":"pick up the grape and put it in the yellow bowl","placeholder":false,"rollout":"./static/realrobot/pnp/Visual/rollout.mp4","frames":"./static/realrobot/pnp/Visual/frames.json","poster":"./static/realrobot/pnp/Visual/poster.png"},{"condition":"Multiple","instruction":"pick up the gadget that controls where your cursor goes and place it in the sky blue bowl.","placeholder":false,"rollout":"./static/realrobot/pnp/Multiple/rollout.mp4","frames":"./static/realrobot/pnp/Multiple/frames.json","poster":"./static/realrobot/pnp/Multiple/poster.png"}]},{"key":"pouring","label":"Pouring","episodes":[{"condition":"In-distribution","instruction":"pour the black cup into the sky blue bowl","placeholder":false,"rollout":"./static/realrobot/pouring/In-distribution/rollout.mp4","frames":"./static/realrobot/pouring/In-distribution/frames.json","poster":"./static/realrobot/pouring/In-distribution/poster.png"},{"condition":"Language","instruction":"pour the yellow paper cup into the bowl with the color of a rose","placeholder":false,"rollout":"./static/realrobot/pouring/Language/rollout.mp4","frames":"./static/realrobot/pouring/Language/frames.json","poster":"./static/realrobot/pouring/Language/poster.png"},{"condition":"Spatial","instruction":"pour the yellow paper cup into the yellow bowl","placeholder":false,"rollout":"./static/realrobot/pouring/Spatial/rollout.mp4","frames":"./static/realrobot/pouring/Spatial/frames.json","poster":"./static/realrobot/pouring/Spatial/poster.png"},{"condition":"Visual","instruction":"pour the black cup into the pink bowl","placeholder":false,"rollout":"./static/realrobot/pouring/Visual/rollout.mp4","frames":"./static/realrobot/pouring/Visual/frames.json","poster":"./static/realrobot/pouring/Visual/poster.png"},{"condition":"Multiple","instruction":"pour the cup with the color of charcoal into the yellow bowl","placeholder":false,"rollout":"./static/realrobot/pouring/Multiple/rollout.mp4","frames":"./static/realrobot/pouring/Multiple/frames.json","poster":"./static/realrobot/pouring/Multiple/poster.png"}]},{"key":"button","label":"Button Pressing","episodes":[{"condition":"In-distribution","instruction":"press the red button","placeholder":false,"rollout":"./static/realrobot/button/In-distribution/rollout.mp4","frames":"./static/realrobot/button/In-distribution/frames.json","poster":"./static/realrobot/button/In-distribution/poster.png"},{"condition":"Language","instruction":"press the button with the color of a sapphire","placeholder":false,"rollout":"./static/realrobot/button/Language/rollout.mp4","frames":"./static/realrobot/button/Language/frames.json","poster":"./static/realrobot/button/Language/poster.png"},{"condition":"Spatial","instruction":"press the button in the middle","placeholder":false,"rollout":"./static/realrobot/button/Spatial/rollout.mp4","frames":"./static/realrobot/button/Spatial/frames.json","poster":"./static/realrobot/button/Spatial/poster.png"},{"condition":"Visual","instruction":"press the green button","placeholder":false,"rollout":"./static/realrobot/button/Visual/rollout.mp4","frames":"./static/realrobot/button/Visual/frames.json","poster":"./static/realrobot/button/Visual/poster.png"},{"condition":"Multiple","instruction":"press the button with the color of a blue jay","placeholder":false,"rollout":"./static/realrobot/button/Multiple/rollout.mp4","frames":"./static/realrobot/button/Multiple/frames.json","poster":"./static/realrobot/button/Multiple/poster.png"}]}]}
+          </script>
+
+          <!-- ===== Baseline Comparison: Ours vs. HAMSTER / 3DFA / pi0.5 ===== -->
+          <hr class="rr-divider">
+          <h3 class="title is-5 rr-subhead" style="margin-top: 2.4rem;">
+            <span class="rr-subhead__chip">vs. Baselines</span>3D HAMSTER vs. Prior Methods
+          </h3>
+          <div class="content has-text-justified" style="margin-top: 0.8rem;">
+            <p>
+              The same real-robot scenes run head-to-head against strong baselines. 3D HAMSTER&rsquo;s
+              metrically grounded guidance holds where surface-level 2D guidance drifts.
+            </p>
+          </div>
+
+
+          <!-- Varied Lighting (Real-World) -->
+          <h3 class="title is-5" style="margin-top: 2.4rem;">Varied Lighting</h3>
+          <div class="content has-text-justified" style="margin-top: 0.8rem;">
+            <p>
+              Same four methods on the real Franka Panda, evaluated under shifted lighting conditions. 3D depth
+              cues remain stable across illumination changes while surface-level 2D guidance degrades.
+            </p>
+          </div>
+          <h4 class="subtask-title">&ldquo;Pick up the volleyball and put it in the pink bowl&rdquo;</h4>
+          <div class="video-grid-2x2">
+            <div class="grid-item">
+              <div class="video-crop">
+              <video autoplay muted loop playsinline class="result-video">
+                <source src="./static/videos/qual2_3d_hamster.mp4" type="video/mp4">
+              </video>
+              <span class="outcome outcome-success">Success</span>
+              </div>
+              <div class="method-label label-ours">3D HAMSTER (Ours)</div>
+            </div>
+            <div class="grid-item">
+              <div class="video-crop">
+              <video autoplay muted loop playsinline class="result-video">
+                <source src="./static/videos/qual2_hamster.mp4" type="video/mp4">
+              </video>
+              <span class="outcome outcome-fail">Failure</span>
+              </div>
+              <div class="method-label label-base">HAMSTER</div>
+            </div>
+            <div class="grid-item">
+              <div class="video-crop">
+              <video autoplay muted loop playsinline class="result-video">
+                <source src="./static/videos/qual2_3dfa.mp4" type="video/mp4">
+              </video>
+              <span class="outcome outcome-fail">Failure</span>
+              </div>
+              <div class="method-label label-base">3DFA</div>
+            </div>
+            <div class="grid-item">
+              <div class="video-crop">
+              <video autoplay muted loop playsinline class="result-video">
+                <source src="./static/videos/qual2_pi.mp4" type="video/mp4">
+              </video>
+              <span class="outcome outcome-fail">Failure</span>
+              </div>
+              <div class="method-label label-base">&pi;0.5</div>
+            </div>
+          </div>
+
+          <!-- Cluttered Scenes (Real-World) -->
+          <h3 class="title is-5" style="margin-top: 2.4rem;">Cluttered Scenes</h3>
+          <div class="content has-text-justified" style="margin-top: 0.8rem;">
+            <p>
+              On the real Franka Panda, the target object is placed inside a visually crowded scene populated with
+              distractor objects. The instruction uses an unseen referring expression, further stressing language
+              grounding. 3D HAMSTER's metrically grounded trajectory guidance keeps the policy on-task while 2D
+              baselines drift onto visually salient distractors.
+            </p>
+          </div>
+          <h4 class="subtask-title">&ldquo;Pick up the ingredient that makes wine and put it in the lemon-colored bowl&rdquo;</h4>
+          <div class="video-grid-2x2">
+            <div class="grid-item">
+              <div class="video-crop">
+              <video autoplay muted loop playsinline class="result-video">
+                <source src="./static/videos/qual1_3d_hamster.mp4" type="video/mp4">
+              </video>
+              <span class="outcome outcome-success">Success</span>
+              </div>
+              <div class="method-label label-ours">3D HAMSTER (Ours)</div>
+            </div>
+            <div class="grid-item">
+              <div class="video-crop">
+              <video autoplay muted loop playsinline class="result-video">
+                <source src="./static/videos/qual1_hamster.mp4" type="video/mp4">
+              </video>
+              <span class="outcome outcome-fail">Failure</span>
+              </div>
+              <div class="method-label label-base">HAMSTER</div>
+            </div>
+            <div class="grid-item">
+              <div class="video-crop">
+              <video autoplay muted loop playsinline class="result-video">
+                <source src="./static/videos/qual1_3dfa.mp4" type="video/mp4">
+              </video>
+              <span class="outcome outcome-fail">Failure</span>
+              </div>
+              <div class="method-label label-base">3DFA</div>
+            </div>
+            <div class="grid-item">
+              <div class="video-crop">
+              <video autoplay muted loop playsinline class="result-video">
+                <source src="./static/videos/qual1_pi05.mp4" type="video/mp4">
+              </video>
+              <span class="outcome outcome-fail">Failure</span>
+              </div>
+              <div class="method-label label-base">&pi;0.5</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== HAMSTER (2D) vs. 3D HAMSTER ==================== -->
+  <section class="section reveal" id="hamster-vs" data-section-num="04">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column is-full-width">
+          <div class="section-label">2D vs. 3D Trajectory Guidance</div>
+          <h2 class="title is-4 section-title" data-section-num="04">HAMSTER vs. 3D HAMSTER</h2>
+          <div class="content has-text-justified" style="margin-top: 1.2rem;">
+            <p>
+              HAMSTER predicts <strong>2D</strong> pixel trajectories that cling to the scene surface
+              (the &ldquo;graffiti effect&rdquo;), so execution drifts off the target.
+              <strong>3D HAMSTER</strong> predicts <strong>metric 3D</strong> trajectories that stay
+              geometrically grounded &mdash; turning the same failures into successes.
+            </p>
+          </div>
+          <h4 class="subtask-title">&ldquo;Pick up the volleyball and place it in the basket&rdquo;</h4>
+          <div class="comparison-grid">
+            <div class="comparison-item">
+              <video autoplay muted loop playsinline class="result-video">
+                <source src="./static/videos/hamster_firi_graffiti.mp4" type="video/mp4">
+              </video>
+              <span class="outcome outcome-fail">Graffiti Effect</span>
+              <div class="label label-base">HAMSTER (2D)</div>
+            </div>
+            <div class="comparison-item">
+              <video autoplay muted loop playsinline class="result-video">
+                <source src="./static/videos/3d_hamster_firi.mp4" type="video/mp4">
+              </video>
+              <span class="outcome outcome-success">Grounded in 3D</span>
+              <div class="label label-ours">3D HAMSTER (Ours)</div>
+            </div>
+          </div>
+
+          <div class="comparison-grid">
+            <div class="comparison-item">
+              <video autoplay muted loop playsinline class="result-video">
+                <source src="./static/videos/hamster_volleyball.mp4" type="video/mp4">
+              </video>
+              <span class="outcome outcome-fail">Failure</span>
+              <div class="label label-base">HAMSTER (2D)</div>
+            </div>
+            <div class="comparison-item">
+              <video autoplay muted loop playsinline class="result-video">
+                <source src="./static/videos/3d_hamster_volleyball.mp4" type="video/mp4">
+              </video>
+              <span class="outcome outcome-success">Success</span>
+              <div class="label label-ours">3D HAMSTER (Ours)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== QUANTITATIVE RESULTS TABLES ==================== -->
+  <section class="section reveal" id="results" data-section-num="05">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column is-full-width">
+          <div class="section-label">Benchmarks &middot; Accuracy &amp; Success Rate</div>
+          <h2 class="title is-4 section-title" data-section-num="05">Quantitative Results</h2>
+
+          <!-- Table I: 3D Trajectory Prediction -->
+          <h3 class="title is-5" style="margin-top: 1.8rem;">3D Trajectory Prediction on DroidSpatial-Bench</h3>
+          <div class="content has-text-justified">
+            <p>
+              Our depth-encoder-augmented VLM produces more accurate 3D trajectories than strong baselines including
+              proprietary VLMs and open-source models.
+            </p>
+          </div>
+          <figure class="figure-block">
+            <div class="table-caption">
+              <strong>Table I.</strong> 3D Trajectory Prediction on DroidSpatial-Bench. Accuracy at two metric
+              tolerances (&delta; = 5&nbsp;cm and 10&nbsp;cm) for start, end, and both endpoints.
+              <span class="best-legend">Best</span> is highlighted.
+            </div>
+            <div class="table-wrapper">
+              <table class="results-table">
+                <thead>
+                  <tr>
+                    <th rowspan="2">Model</th>
+                    <th rowspan="2">Input</th>
+                    <th colspan="3">&delta; = 5 cm</th>
+                    <th colspan="3">&delta; = 10 cm</th>
+                  </tr>
+                  <tr>
+                    <th>Start</th>
+                    <th>End</th>
+                    <th>Both</th>
+                    <th>Start</th>
+                    <th>End</th>
+                    <th>Both</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="section-header">
+                    <td colspan="8">Proprietary API Models</td>
+                  </tr>
+                  <tr>
+                    <td>Claude Sonnet 4.6</td>
+                    <td>RGB</td>
+                    <td>1.4</td>
+                    <td>8.8</td>
+                    <td>0.7</td>
+                    <td>6.1</td>
+                    <td>16.2</td>
+                    <td>2.0</td>
+                  </tr>
+                  <tr>
+                    <td>GPT-5.2</td>
+                    <td>RGB</td>
+                    <td>6.8</td>
+                    <td>29.7</td>
+                    <td>2.7</td>
+                    <td>29.7</td>
+                    <td>45.3</td>
+                    <td>16.2</td>
+                  </tr>
+                  <tr>
+                    <td>Gemini-3.0-Pro</td>
+                    <td>RGB</td>
+                    <td>29.1</td>
+                    <td>44.0</td>
+                    <td>16.2</td>
+                    <td>43.2</td>
+                    <td>56.1</td>
+                    <td>29.7</td>
+                  </tr>
+                  <tr class="section-header">
+                    <td colspan="8">Open-Source Models</td>
+                  </tr>
+                  <tr>
+                    <td>RoboBrain-2.5-8B</td>
+                    <td>RGB</td>
+                    <td>61.5</td>
+                    <td>58.1</td>
+                    <td>39.2</td>
+                    <td>80.4</td>
+                    <td>74.3</td>
+                    <td>60.1</td>
+                  </tr>
+                  <tr class="section-header">
+                    <td colspan="8">3D HAMSTER (Ours)</td>
+                  </tr>
+                  <tr>
+                    <td>Qwen3-VL-8B</td>
+                    <td>RGB</td>
+                    <td>0.7</td>
+                    <td>9.5</td>
+                    <td>0.7</td>
+                    <td>0.7</td>
+                    <td>14.9</td>
+                    <td>0.7</td>
+                  </tr>
+                  <tr>
+                    <td>&ensp;+ 3D Traj. Data</td>
+                    <td>RGB</td>
+                    <td>50.0</td>
+                    <td>50.0</td>
+                    <td>27.7</td>
+                    <td>71.6</td>
+                    <td>72.3</td>
+                    <td>50.0</td>
+                  </tr>
+                  <tr>
+                    <td>&ensp;+ Depth Encoder</td>
+                    <td>RGBD</td>
+                    <td>62.8</td>
+                    <td>62.2</td>
+                    <td>42.6</td>
+                    <td>83.8</td>
+                    <td>75.0</td>
+                    <td>62.8</td>
+                  </tr>
+                  <tr class="ours-row">
+                    <td>&ensp;+ L<sub>depth</sub></td>
+                    <td>RGBD</td>
+                    <td class="best">63.5</td>
+                    <td class="best">66.2</td>
+                    <td class="best">41.9</td>
+                    <td class="best">80.4</td>
+                    <td class="best">82.4</td>
+                    <td class="best">65.5</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </figure>
+
+          <!-- Table II: Colosseum -->
+          <h3 class="title is-5" style="margin-top: 2.2rem;">Simulation: Colosseum Benchmark</h3>
+          <div class="content has-text-justified">
+            <p>
+              Per-variation success rates averaged across 11 tasks on Colosseum, which stress-tests policies under 14
+              perturbation axes. 3D guidance provides both appearance invariance and geometric robustness.
+            </p>
+          </div>
+          <figure class="figure-block">
+            <div class="table-caption">
+              <strong>Table II.</strong> Colosseum simulation: per-variation success rate averaged across 11 tasks.
+            </div>
+            <div class="table-wrapper">
+              <table class="results-table">
+                <thead>
+                  <tr>
+                    <th>Method</th>
+                    <th>None</th>
+                    <th>MO</th>
+                    <th>RO</th>
+                    <th>Light</th>
+                    <th>Table</th>
+                    <th>Distract</th>
+                    <th>BG Tex</th>
+                    <th>RLB Var</th>
+                    <th>Cam Pose</th>
+                    <th>All Var</th>
+                    <th>Avg.</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>3DFA</td>
+                    <td>53.8</td>
+                    <td>39.0</td>
+                    <td>27.2</td>
+                    <td>38.0</td>
+                    <td>30.3</td>
+                    <td>36.4</td>
+                    <td>43.3</td>
+                    <td>50.0</td>
+                    <td>46.8</td>
+                    <td>0.8</td>
+                    <td>36.6</td>
+                  </tr>
+                  <tr>
+                    <td>3DFA + HAMSTER</td>
+                    <td>49.5</td>
+                    <td>38.1</td>
+                    <td>28.8</td>
+                    <td>38.8</td>
+                    <td>42.3</td>
+                    <td>40.8</td>
+                    <td>43.3</td>
+                    <td>50.5</td>
+                    <td>48.4</td>
+                    <td>7.2</td>
+                    <td>38.8</td>
+                  </tr>
+                  <tr class="ours-row">
+                    <td>3DFA + 3D HAMSTER</td>
+                    <td class="best">62.9</td>
+                    <td class="best">49.4</td>
+                    <td class="best">36.3</td>
+                    <td class="best">54.4</td>
+                    <td class="best">39.6</td>
+                    <td class="best">44.8</td>
+                    <td class="best">52.0</td>
+                    <td class="best">52.5</td>
+                    <td class="best">49.2</td>
+                    <td>7.2</td>
+                    <td class="best">44.8</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </figure>
+
+          <!-- Table III: Real-World -->
+          <h3 class="title is-5" style="margin-top: 2.2rem;">Real-World Manipulation</h3>
+          <div class="content has-text-justified">
+            <p>
+              Success rates (%) on real Franka Panda arm across three task families. 3D HAMSTER achieves the highest
+              average success across all tasks, with the largest gains under visual and spatial distribution shifts.
+            </p>
+          </div>
+          <figure class="figure-block">
+            <div class="table-caption">
+              <strong>Table III.</strong> Real-world manipulation success rates (%) on a Franka Panda arm across
+              three task families and five condition shifts (In-distribution, Language, Spatial, Visual, Multiple).
+            </div>
+            <div class="table-wrapper">
+              <table class="results-table">
+                <thead>
+                  <tr>
+                    <th>Method</th>
+                    <th>In-D</th>
+                    <th>Lang</th>
+                    <th>Spatial</th>
+                    <th>Visual</th>
+                    <th>Multiple</th>
+                    <th>Avg.</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="section-header">
+                    <td colspan="7">Button Pressing</td>
+                  </tr>
+                  <tr>
+                    <td>&pi;0.5</td>
+                    <td>100</td>
+                    <td>80</td>
+                    <td>40</td>
+                    <td>90</td>
+                    <td>60</td>
+                    <td>74</td>
+                  </tr>
+                  <tr>
+                    <td>3DFA</td>
+                    <td>90</td>
+                    <td>30</td>
+                    <td>0</td>
+                    <td>30</td>
+                    <td>40</td>
+                    <td>38</td>
+                  </tr>
+                  <tr>
+                    <td>3DFA + HAMSTER</td>
+                    <td>80</td>
+                    <td>50</td>
+                    <td>20</td>
+                    <td>80</td>
+                    <td>70</td>
+                    <td>60</td>
+                  </tr>
+                  <tr class="ours-row">
+                    <td>3DFA + 3D HAMSTER</td>
+                    <td class="best">100</td>
+                    <td class="best">90</td>
+                    <td class="best">50</td>
+                    <td class="best">100</td>
+                    <td>60</td>
+                    <td class="best">80</td>
+                  </tr>
+                  <tr class="section-header">
+                    <td colspan="7">Pouring</td>
+                  </tr>
+                  <tr>
+                    <td>&pi;0.5</td>
+                    <td>60</td>
+                    <td>15</td>
+                    <td>35</td>
+                    <td>65</td>
+                    <td>30</td>
+                    <td>41</td>
+                  </tr>
+                  <tr>
+                    <td>3DFA</td>
+                    <td>80</td>
+                    <td>45</td>
+                    <td>50</td>
+                    <td>50</td>
+                    <td>25</td>
+                    <td>50</td>
+                  </tr>
+                  <tr>
+                    <td>3DFA + HAMSTER</td>
+                    <td>75</td>
+                    <td>45</td>
+                    <td>40</td>
+                    <td>35</td>
+                    <td>30</td>
+                    <td>45</td>
+                  </tr>
+                  <tr class="ours-row">
+                    <td>3DFA + 3D HAMSTER</td>
+                    <td class="best">95</td>
+                    <td class="best">75</td>
+                    <td class="best">65</td>
+                    <td class="best">65</td>
+                    <td class="best">40</td>
+                    <td class="best">68</td>
+                  </tr>
+                  <tr class="section-header">
+                    <td colspan="7">Pick-and-Place</td>
+                  </tr>
+                  <tr>
+                    <td>&pi;0.5</td>
+                    <td>100</td>
+                    <td>50</td>
+                    <td>15</td>
+                    <td>30</td>
+                    <td>5</td>
+                    <td>40</td>
+                  </tr>
+                  <tr>
+                    <td>3DFA</td>
+                    <td>65</td>
+                    <td>35</td>
+                    <td>55</td>
+                    <td>30</td>
+                    <td>20</td>
+                    <td>41</td>
+                  </tr>
+                  <tr>
+                    <td>3DFA + HAMSTER</td>
+                    <td>65</td>
+                    <td>65</td>
+                    <td>35</td>
+                    <td>30</td>
+                    <td>35</td>
+                    <td>46</td>
+                  </tr>
+                  <tr class="ours-row">
+                    <td>3DFA + 3D HAMSTER</td>
+                    <td class="best">90</td>
+                    <td class="best">70</td>
+                    <td class="best">55</td>
+                    <td class="best">50</td>
+                    <td class="best">45</td>
+                    <td class="best">62</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </figure>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== BIBTEX ==================== -->
+  <section class="section reveal" id="bibtex" data-section-num="06">
+    <div class="container is-max-desktop content">
+      <div class="section-label">Citation</div>
+      <h2 class="title is-4 section-title" data-section-num="06">BibTeX</h2>
+      <div class="bibtex-container" style="margin-top: 1.2rem;">
+        <button class="copy-button" onclick="copyBibTeX()" title="Copy BibTeX">
+          <i class="fas fa-copy"></i>&ensp;Copy
+        </button>
+        <div class="copy-feedback" id="copyFeedback">Copied!</div>
+        <pre><code id="bibtexCode">@INPROCEEDINGS{hwang20263dhamster,
+  author={Hwang, Dongyoon and Lee, Byungkun and Kim, Dongjin and Jang, Hyojin and Jin, Hoiyeong and Mun, Jueun and Park, Minho and Lee, Hojoon and Kim, Hyunseung and Choo, Jaegul},
+  booktitle={2026 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)},
+  title={{3D HAMSTER}: Bridging Planning and Control in Hierarchical Vision Language Action Models through {3D} Trajectory Guidance},
+  year={2026}}</code></pre>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    async function copyBibTeX() {
+      const bibtexText = document.getElementById('bibtexCode').textContent;
+      const copyButton = document.querySelector('.copy-button');
+      const feedback = document.getElementById('copyFeedback');
+      try {
+        await navigator.clipboard.writeText(bibtexText);
+      } catch (err) {
+        const textArea = document.createElement('textarea');
+        textArea.value = bibtexText;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+      }
+      copyButton.classList.add('copied');
+      copyButton.innerHTML = '<i class="fas fa-check"></i>&ensp;Copied!';
+      feedback.classList.add('show');
+      setTimeout(() => {
+        copyButton.classList.remove('copied');
+        copyButton.innerHTML = '<i class="fas fa-copy"></i>&ensp;Copy';
+        feedback.classList.remove('show');
+      }, 2200);
+    }
+  </script>
+
+  <!-- Scroll-reveal + TOC scroll-spy -->
+  <script>
+    (function () {
+      // Reveal on scroll (one-shot)
+      const revealEls = document.querySelectorAll('.reveal');
+      if ('IntersectionObserver' in window && revealEls.length) {
+        const io = new IntersectionObserver((entries) => {
+          for (const e of entries) {
+            if (e.isIntersecting) {
+              e.target.classList.add('is-visible');
+              io.unobserve(e.target);
+            }
+          }
+        }, { rootMargin: '0px 0px -8% 0px', threshold: 0.05 });
+        revealEls.forEach((el) => io.observe(el));
+      } else {
+        revealEls.forEach((el) => el.classList.add('is-visible'));
+      }
+
+      // Scroll-spy for sticky TOC
+      const navLinks = Array.from(document.querySelectorAll('.page-nav a[data-nav]'));
+      const navMap = new Map();
+      navLinks.forEach((a) => {
+        const id = a.getAttribute('data-nav');
+        const el = document.getElementById(id);
+        if (el) navMap.set(el, a);
+      });
+      if ('IntersectionObserver' in window && navMap.size) {
+        const spy = new IntersectionObserver((entries) => {
+          entries.forEach((e) => {
+            const link = navMap.get(e.target);
+            if (!link) return;
+            if (e.isIntersecting) {
+              navLinks.forEach((a) => a.classList.remove('is-active'));
+              link.classList.add('is-active');
+            }
+          });
+        }, { rootMargin: '-45% 0px -50% 0px', threshold: 0 });
+        navMap.forEach((_, section) => spy.observe(section));
+      }
+    })();
+  </script>
+
+  <!-- Static PLY viewer + carousel (§02 trajectory comparisons) -->
+  <script type="module" src="./static/js/static-pcd.js?v=gradient1"></script>
+
+  <!-- Video-synced temporal point-cloud player (§03 focus panel) -->
+  <script type="module" src="./static/js/synced-pcd.js"></script>
+
+  <!-- Side-by-Side Render lightbox (click to enlarge + wheel-zoom / pan) -->
+  <script src="./static/js/sxs-lightbox.js"></script>
+
+  <!-- Real-robot gallery: family tabs + condition row + focus panel -->
+  <script>
+    (function () {
+      function init() {
+        const root = document.querySelector('[data-rr-gallery]');
+        const dataEl = document.querySelector('script[data-rr-json]');
+        if (!root || !dataEl) return;
+        let DATA;
+        try { DATA = JSON.parse(dataEl.textContent); } catch (e) { console.error('[rr]', e); return; }
+
+        const tabs     = Array.from(root.querySelectorAll('.rr-tab'));
+        const condWrap = root.querySelector('[data-rr-conditions]');
+        const video    = root.querySelector('[data-rr-video]');
+        const badge    = root.querySelector('[data-rr-badge]');
+        const prompt   = root.querySelector('[data-rr-prompt]');
+        const host     = root.querySelector('[data-rr-host]');
+        const hint     = root.querySelector('[data-rr-hint]');
+        if (host && hint) {
+          host.addEventListener('pointerdown', () => hint.classList.add('is-hidden'), { once: true });
+        }
+
+        let famKey  = DATA.families[0].key;
+        let condIdx = 0;
+        let viewerReady = false;  // flips true once the gallery scrolls into view
+        let viewer = null;        // synced 3D player (created lazily)
+        const fam = () => DATA.families.find(f => f.key === famKey);
+
+        function loadViewer(ep) {
+          if (!ep.frames || !window.createSyncedPcd) return;
+          if (!viewer) viewer = window.createSyncedPcd(host, video);
+          viewer.setSource(ep.frames);
+        }
+
+        function setFocus(i, opts) {
+          opts = opts || {};
+          condIdx = i;
+          const ep = fam().episodes[i];
+          if (video.getAttribute('src') !== ep.rollout) {
+            video.poster = ep.poster;
+            video.src = ep.rollout;
+            video.load();
+            video.play().catch(() => {});
+          }
+          badge.hidden = !ep.placeholder;
+          prompt.textContent = ep.instruction;
+          if (viewerReady && !opts.skipViewer) loadViewer(ep);
+          condWrap.querySelectorAll('.rr-tile').forEach((t, j) =>
+            t.classList.toggle('is-active', j === i));
+        }
+
+        function renderConditions() {
+          condWrap.innerHTML = '';
+          fam().episodes.forEach((ep, i) => {
+            const tile = document.createElement('button');
+            tile.type = 'button';
+            tile.className = 'rr-tile' + (i === condIdx ? ' is-active' : '');
+            tile.setAttribute('aria-label', ep.condition + ': ' + ep.instruction);
+            tile.innerHTML =
+              (ep.placeholder ? '<span class="rr-tile__ph">Repr.</span>' : '') +
+              '<video class="rr-tile__video" autoplay muted loop playsinline preload="metadata" poster="' + ep.poster + '">' +
+                '<source src="' + ep.rollout + '" type="video/mp4"></video>' +
+              '<span class="rr-tile__label">' + ep.condition + '</span>';
+            tile.addEventListener('click', () => setFocus(i));
+            condWrap.appendChild(tile);
+          });
+        }
+
+        function selectFamily(key) {
+          if (key === famKey) return;
+          famKey = key;
+          tabs.forEach(t => t.classList.toggle('is-active', t.dataset.fam === key));
+          renderConditions();
+          setFocus(0);              // family change → refresh 3D viewer too
+        }
+
+        tabs.forEach(t => t.addEventListener('click', () => selectFamily(t.dataset.fam)));
+
+        // First paint: render tiles + focus media, but DON'T load the heavy
+        // (~25MB) viser viewer yet.
+        renderConditions();
+        setFocus(0, { skipViewer: true });
+
+        // Activate the viewer only when the gallery first scrolls into view,
+        // so the page top isn't burdened by a 25MB iframe on load.
+        if ('IntersectionObserver' in window) {
+          const io = new IntersectionObserver((entries) => {
+            for (const e of entries) {
+              if (e.isIntersecting) {
+                viewerReady = true;
+                loadViewer(fam().episodes[condIdx]);
+                io.disconnect();
+                return;
+              }
+            }
+          }, { rootMargin: '250px' });
+          io.observe(root);
+        } else {
+          viewerReady = true;
+          loadViewer(fam().episodes[condIdx]);
+        }
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+      } else {
+        init();
+      }
+    })();
+  </script>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="columns is-centered">
+        <div class="column is-8">
+          <div class="content" style="text-align: center;">
+            <p>
+              This webpage template is adapted from
+              <a href="https://github.com/nerfies/nerfies.github.io">Nerfies</a> and
+              <a href="https://map-anything.github.io/">MapAnything</a>,
+              under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0 License</a>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</body>
+
+</html>
