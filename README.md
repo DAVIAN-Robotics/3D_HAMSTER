@@ -6,6 +6,7 @@
 [![Project Page](https://img.shields.io/badge/Project-Page-1f8acb.svg)](https://davian-robotics.github.io/3D_HAMSTER/)
 [![Code](https://img.shields.io/badge/Code-GitHub-181717.svg?logo=github)](https://github.com/DAVIAN-Robotics/3D_HAMSTER)
 [![Model](https://img.shields.io/badge/%F0%9F%A4%97%20Model-DAVIAN--Robotics%2F3D__HAMSTER-yellow.svg)](https://huggingface.co/DAVIAN-Robotics/3D_HAMSTER)
+[![Demo](https://img.shields.io/badge/%F0%9F%A4%97%20Demo-Spaces-yellow.svg)](https://huggingface.co/spaces/hugging-apps/3d-hamster)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
 Dongyoon Hwang<sup>\*1</sup>, Byungkun Lee<sup>\*1</sup>, Dongjin Kim<sup>\*1</sup>, Hyojin Jang<sup>1</sup>, Hoiyeong Jin<sup>1</sup>, Jueun Mun<sup>2</sup>, \
@@ -114,6 +115,8 @@ The **Gradio demo** exposes all task styles via a dropdown (each sends the match
 > ⚠️ Depth must be **metric (meters)** and aligned to the RGB image. Passing disparity, normalized, or millimeter-scaled depth will silently degrade the predicted geometry.
 
 ## Gradio Demo
+
+Try it directly in your browser on **[🤗 Hugging Face Spaces](https://huggingface.co/spaces/hugging-apps/3d-hamster)** — no setup required. To run locally:
 
 ```bash
 CUDA_VISIBLE_DEVICES=0 python scripts/trajectory_prediction_gradio.py --autoload
