@@ -142,9 +142,10 @@ attributions are retained and apply to the corresponding code and weights.
 If you find 3D HAMSTER useful, please cite our work:
 
 ```bibtex
-@INPROCEEDINGS{hwang20263dhamster,
+@article{hwang20263dhamster,
+  title={3D HAMSTER: Bridging Planning and Control in Hierarchical Vision Language Action Models through 3D Trajectory Guidance},
   author={Hwang, Dongyoon and Lee, Byungkun and Kim, Dongjin and Jang, Hyojin and Jin, Hoiyeong and Mun, Jueun and Park, Minho and Lee, Hojoon and Kim, Hyunseung and Choo, Jaegul},
-  booktitle={2026 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)},
-  title={{3D HAMSTER}: Bridging Planning and Control in Hierarchical Vision Language Action Models through {3D} Trajectory Guidance},
-  year={2026}}
+  journal={arXiv preprint arXiv:2606.31329},
+  year={2026}
+}
 ```
